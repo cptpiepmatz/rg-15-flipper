@@ -118,3 +118,21 @@ impl BaudRate {
         ]
     }
 }
+
+impl TryFrom<u16> for BaudRate {
+    type Error = u16;
+
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
+        use BaudRate as BR;
+        Ok(match value {
+            0 | 1200 => BR::Baud1200,
+            1 | 2400 => BR::Baud2400,
+            2 | 4800 => BR::Baud4800,
+            3 | 9600 => BR::Baud9600,
+            4 | 19200 => BR::Baud19200,
+            5 | 38400 => BR::Baud38400,
+            6 | 57600 => BR::Baud57600,
+            _ => return Err(value),
+        })
+    }
+}
