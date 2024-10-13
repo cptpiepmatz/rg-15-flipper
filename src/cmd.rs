@@ -1,5 +1,6 @@
 use core::ffi::CStr;
 
+#[derive(Debug, Clone, Copy)]
 pub enum Command {
     AccumulationData,
     ReadAvailableData,
@@ -17,7 +18,46 @@ pub enum Command {
     DisableExternalTbInput,
 }
 
-impl Command {}
+impl Command {
+    pub fn list() -> &'static [Command] {
+        use Command as C;
+        &[
+            C::AccumulationData,
+            C::ReadAvailableData,
+            C::Kill,
+            // C::BaudRate(_), skip for now
+            C::PollingMode,
+            C::ContinousMode,
+            C::ForceHighResolution,
+            C::ForceLowResolution,
+            C::ForceImperial,
+            C::ForceMetic,
+            C::UseSwitchValue,
+            C::ResetAccumulationCounter,
+            C::EnableExternalTbInput,
+            C::DisableExternalTbInput,
+        ]
+    }
+
+    pub fn name(self) -> &'static CStr {
+        match self {
+            Command::AccumulationData => c"Get Accumulation Data",
+            Command::ReadAvailableData => c"Read Available Data",
+            Command::Kill => c"Kill",
+            Command::BaudRate(_) => c"Set Baud Rate",
+            Command::PollingMode => c"Set Polling Mode",
+            Command::ContinousMode => c"Set Continous Mode",
+            Command::ForceHighResolution => c"Force High Resolution",
+            Command::ForceLowResolution => c"Force Low Resolution",
+            Command::ForceImperial => c"Force Imperial Units",
+            Command::ForceMetic => c"Force Metric Units",
+            Command::UseSwitchValue => c"Use Values from Switch",
+            Command::ResetAccumulationCounter => c"Reset Acc Counter",
+            Command::EnableExternalTbInput => c"Enable External TB Input",
+            Command::DisableExternalTbInput => c"Disable External TB Input",
+        }
+    }
+}
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone)]
