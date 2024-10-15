@@ -31,6 +31,7 @@ use flipperzero_rt::{entry, manifest};
 use flipperzero_sys::{self as sys, furi::UnsafeRecord, FuriHalSerialRxEvent};
 
 mod cmd;
+mod safe;
 
 manifest!(name = "RG-15");
 entry!(main);
@@ -364,7 +365,7 @@ impl App {
                 cmd: cmd_submenu,
                 raw: raw_widget,
             };
-            
+
             let serial_handle = NonNull::new(sys::furi_hal_serial_control_acquire(
                 sys::FuriHalSerialId_FuriHalSerialIdUsart,
             ))
