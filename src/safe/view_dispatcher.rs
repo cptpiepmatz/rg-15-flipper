@@ -1,5 +1,8 @@
 use super::{gui::Gui, submenu::Submenu, View};
-use alloc::vec::Vec;
+use alloc::{
+    sync::{Arc, Weak},
+    vec::Vec,
+};
 use core::{ffi::c_uchar, ptr::NonNull};
 use flipperzero_sys as sys;
 
@@ -8,8 +11,7 @@ pub struct ViewDispatcher {
 
     pub(super) gui: Gui,
 
-    pub(super) view_counter: u32,
-    pub(super) views: Vec<(u32, View)>,
+    pub(super) views: Vec<(u32, Arc<View>)>,
     pub(super) submenus: Vec<(u32, Submenu)>,
 }
 
@@ -28,7 +30,6 @@ impl ViewDispatcher {
 
                 gui,
 
-                view_counter: 0,
                 views: Vec::new(),
                 submenus: Vec::new(),
             };
@@ -43,27 +44,37 @@ impl ViewDispatcher {
         }
     }
 
-    pub fn add_view(&mut self, view: View) {
-        let view_id = self.view_counter;
-
+    pub fn add_view(&mut self, view: View, view_id: u32) -> Weak<View> {
         unsafe {
             sys::view_dispatcher_add_view(self.data.as_ptr(), view_id, view.data.as_ptr());
         }
-
-        self.view_counter += 1;
+        let view = Arc::new(view);
+        let weak = Arc::downgrade(&view);
         self.views.push((view_id, view));
+        weak
     }
 
-    pub fn add_submenu(&mut self, submenu: Submenu) {
-        let view_id = self.view_counter;
-
+    pub fn add_submenu(&mut self, submenu: Submenu, view_id: u32) {
         unsafe {
-            let view = sys::submenu_get_view(submenu.data.as_ptr());
-            sys::view_dispatcher_add_view(self.data.as_ptr(), view_id, view);
+            sys::view_dispatcher_add_view(
+                self.data.as_ptr(),
+                view_id,
+                submenu.as_view().data.as_ptr(),
+            );
         }
-
-        self.view_counter += 1;
         self.submenus.push((view_id, submenu));
+    }
+
+    pub fn switch_to_view(&mut self, view_id: u32) {
+        unsafe {
+            sys::view_dispatcher_switch_to_view(self.data.as_ptr(), view_id);
+        }
+    }
+
+    pub fn run(&mut self) {
+        unsafe {
+            sys::view_dispatcher_run(self.data.as_ptr());
+        }
     }
 }
 

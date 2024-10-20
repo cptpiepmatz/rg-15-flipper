@@ -17,7 +17,14 @@ bench = false
 test = false
 
 [dependencies]
-flipperzero = "0.12.0"
+flipperzero = { version = "0.12.0", features = ["alloc"] }
 flipperzero-sys = "0.12.0"
 flipperzero-rt = "0.12.0"
 flipperzero-alloc = "0.12.0"
+ufmt = "*"
+
+[patch.crates-io]
+flipperzero = { git = "https://github.com/cptpiepmatz/flipperzero-rs.git", rev = "cb95d86b0f94b2b50c266748f081a878f8c899eb" }
+flipperzero-sys = { git = "https://github.com/cptpiepmatz/flipperzero-rs.git", rev = "cb95d86b0f94b2b50c266748f081a878f8c899eb" }
+flipperzero-rt = { git = "https://github.com/cptpiepmatz/flipperzero-rs.git", rev = "cb95d86b0f94b2b50c266748f081a878f8c899eb" }
+flipperzero-alloc = { git = "https://github.com/cptpiepmatz/flipperzero-rs.git", rev = "cb95d86b0f94b2b50c266748f081a878f8c899eb" }
