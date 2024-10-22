@@ -108,7 +108,7 @@ impl Command {
             11 => Command::ResetAccumulationCounter,
             12 => Command::EnableExternalTbInput,
             13 => Command::DisableExternalTbInput,
-            _ => return None
+            _ => return None,
         })
     }
 

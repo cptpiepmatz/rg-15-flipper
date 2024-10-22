@@ -3,8 +3,8 @@ use alloc::{
     sync::{Arc, Weak},
     vec::Vec,
 };
-use flipperzero::furi::sync::Mutex;
 use core::{ffi::c_uchar, marker::PhantomData, ptr::NonNull};
+use flipperzero::furi::sync::Mutex;
 use flipperzero_sys as sys;
 
 pub struct ViewDispatcher {
@@ -79,7 +79,7 @@ impl ViewDispatcher {
             sys::view_dispatcher_add_view(
                 self.data.as_ptr(),
                 view_id,
-                widget.as_view().data.as_ptr()
+                widget.as_view().data.as_ptr(),
             );
         }
         let widget = Arc::new(Mutex::new(widget));
@@ -97,6 +97,12 @@ impl ViewDispatcher {
     pub fn run(&mut self) {
         unsafe {
             sys::view_dispatcher_run(self.data.as_ptr());
+        }
+    }
+
+    pub fn stop(&self) {
+        unsafe {
+            sys::view_dispatcher_stop(self.data.as_ptr());
         }
     }
 }
@@ -130,5 +136,5 @@ impl ViewSwitcher {
         unsafe {
             sys::view_dispatcher_switch_to_view(self.view_dispatcher_ptr, view_id);
         }
-    } 
+    }
 }

@@ -36,7 +36,14 @@ impl Widget {
 
     pub fn add_text_scroll_element(&mut self, x: u8, y: u8, width: u8, height: u8, text: &CStr) {
         unsafe {
-            sys::widget_add_text_scroll_element(self.data.as_ptr(), x, y, width, height, text.as_ptr());
+            sys::widget_add_text_scroll_element(
+                self.data.as_ptr(),
+                x,
+                y,
+                width,
+                height,
+                text.as_ptr(),
+            );
         }
     }
 
