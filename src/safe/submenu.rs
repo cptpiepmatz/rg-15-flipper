@@ -36,6 +36,7 @@ impl Submenu {
     {
         let submenu = self.data.as_ptr();
         let label = label.as_ptr();
+        // FIXME: keep Arcs stored somewhere instead of dropping them here
         unsafe {
             match context {
                 Some(context) => sys::submenu_add_item(
@@ -43,11 +44,17 @@ impl Submenu {
                     label,
                     index,
                     Some(I::__select),
-                    Arc::into_raw(context).cast_mut().cast(),
+                    Arc::as_ptr(&context).cast_mut().cast(),
                 ),
                 None => sys::submenu_add_item(submenu, label, index, None, ptr::null_mut()),
             }
         };
+    }
+
+    pub fn set_header<'s>(&'s mut self, header: &'s CStr) {
+        unsafe {
+            sys::submenu_set_header(self.data.as_ptr(), header.as_ptr());
+        }
     }
 
     pub fn as_view(&self) -> &View {
