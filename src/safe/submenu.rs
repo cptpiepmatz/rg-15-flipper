@@ -51,6 +51,12 @@ impl Submenu {
         };
     }
 
+    pub fn set_selected_item(&mut self, index: u32) {
+        unsafe {
+            sys::submenu_set_selected_item(self.data.as_ptr(), index);
+        }
+    }
+
     pub fn set_header<'s>(&'s mut self, header: &'s CStr) {
         unsafe {
             sys::submenu_set_header(self.data.as_ptr(), header.as_ptr());

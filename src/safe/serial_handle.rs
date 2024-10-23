@@ -79,6 +79,13 @@ impl SerialHandle<serial_marker::Initialized> {
             sys::furi_hal_serial_tx_wait_complete(self.data.as_ptr());
         }
     }
+
+    // should be &mut self, but I don't want to sync that up correctly now
+    pub fn set_br(&self, baud_rate: u32) {
+        unsafe {
+            sys::furi_hal_serial_set_br(self.data.as_ptr(), baud_rate);
+        }
+    }
 }
 
 impl SerialHandle<serial_marker::Interrupted> {

@@ -9,15 +9,16 @@ extern crate flipperzero_rt;
 extern crate alloc;
 extern crate flipperzero_alloc;
 
-use core::{cmp, ffi::CStr};
+use core::{cell::Cell, cmp, ffi::CStr};
 
 use alloc::{borrow::ToOwned, string::String, sync::Arc};
+use cmd::BaudRate;
 use flipperzero::{
     furi::{self, string::FuriString},
     println,
 };
 use flipperzero_rt::{entry, manifest};
-use serial_marker::Initialized;
+use serial_marker::{Initialized, Uninitialized};
 use ufmt::derive::uDebug;
 
 use safe::*;
@@ -28,6 +29,7 @@ mod safe;
 manifest!(name = "RG-15");
 entry!(main);
 
+const BAUD_RATE_VIEW_ID: u32 = 0;
 const MAIN_VIEW_ID: u32 = 1;
 const RAW_VIEW_ID: u32 = 2;
 const CMD_VIEW_ID: u32 = 3;
@@ -35,17 +37,63 @@ const CMD_VIEW_ID: u32 = 3;
 const SCREEN_HEIGHT: u32 = 64;
 const SCREEN_WIDTH: u32 = 128;
 
+const BAUD_RATE_SUBMENU_HEADER: &'static CStr = c"Select Baud Rate";
 const CMD_SUBMENU_HEADER: &'static CStr = c"Command to RG-15";
 
+fn select_baud_rate() -> Option<BaudRate> {
+    let gui = Gui::open();
+    let view_dispatcher = ViewDispatcher::new(gui, ViewDispatcherType::Fullscreen);
+    
+    struct Context {
+        view_dispatcher: ViewDispatcher,
+        baud_rate: Cell<Option<BaudRate>>,
+    }
+
+    let mut context = Arc::new(Context {
+        view_dispatcher,
+        baud_rate: Cell::new(None)
+    });
+
+    struct SelectBaudRateItem;
+
+    impl SubmenuItem for SelectBaudRateItem {
+        type Context = Context;
+    
+        fn select(context: &Self::Context, baud_rate: u32) {
+            let Ok(baud_rate) = BaudRate::try_from(baud_rate as u16) else { return };
+            context.baud_rate.set(Some(baud_rate));
+            context.view_dispatcher.stop();
+        }
+    }
+
+    let mut submenu = Submenu::new();
+    let submenu_view = submenu.as_mut_view();
+    submenu_view.set_previous_callback::<ViewNone>();
+    submenu.set_header(BAUD_RATE_SUBMENU_HEADER);
+    for baud_rate in BaudRate::list() {
+        submenu.add_item::<SelectBaudRateItem, _>(baud_rate.rate_as_char(), baud_rate.rate() as u32, Some(context.clone()));
+    }
+    submenu.set_selected_item(BaudRate::default().rate() as u32);
+
+    let context = Arc::get_mut(&mut context).expect("submenu::add_item doesn't really store Arcs yet");
+    context.view_dispatcher.add_submenu(submenu, BAUD_RATE_VIEW_ID);
+    context.view_dispatcher.switch_to_view(BAUD_RATE_VIEW_ID);
+    context.view_dispatcher.run();
+
+    context.baud_rate.get()
+}
+
 fn main(_args: Option<&CStr>) -> i32 {
+    let Some(baud_rate) = select_baud_rate() else { return 0 };
+
     let gui = Gui::open();
     let mut view_dispatcher = ViewDispatcher::new(gui, ViewDispatcherType::Fullscreen);
     let view_switcher = view_dispatcher.view_switcher();
 
-    let Some(serial_handle) = SerialHandle::acquire(SerialId::Lpuart) else {
+    let Some(serial_handle) = SerialHandle::acquire(SerialId::Usart) else {
         return 1;
     };
-    let mut serial_handle: SerialHandle<_> = serial_handle.init(9600);
+    let mut serial_handle: SerialHandle<_> = serial_handle.init(baud_rate.rate() as u32);
     let rx = serial_handle.async_rx_start(false);
 
     let context = Arc::new(CallbackContext {
@@ -148,7 +196,6 @@ fn main(_args: Option<&CStr>) -> i32 {
             0
         });
 
-    println!("we run now!");
     view_dispatcher.run();
     drop(view_dispatcher);
     rx_thread.join();
@@ -268,7 +315,12 @@ impl SubmenuItem for CmdSubmenuItem {
         let Some(cmd) = cmd::Command::try_from_code(code) else {
             return;
         };
+
         context.serial_handle.tx(cmd.cmd().as_bytes());
+        if let cmd::Command::BaudRate(baud_rate) = cmd {
+            context.serial_handle.set_br(baud_rate.rate() as u32);
+        }
+
         context.view_switcher.switch_to_view(MAIN_VIEW_ID);
     }
 }
