@@ -36,9 +36,13 @@ Many thanks for that 🦀❤️🐬.
 The app reads sensor data via TTL serial (though the manual refers to it as 
 RS-232 at 3.3V) and sends commands to control the sensor's behavior.
 
-![screenshot](./media/screenshot.png)
+<p align="center">
+  <img alt="Screenshot" src="./media/screenshot.png"/>
+</p>
 
-![usage](./media/flipper-rg-15.gif)
+<p align="center">
+  <img alt="Usage" src="./media/flipper-rg-15.gif"/>
+</p>
 
 For further instructions, check the 
 [manual](./docs/2022.07.18-rev-1.000-rg-15_instructions.pdf) in the `docs`
