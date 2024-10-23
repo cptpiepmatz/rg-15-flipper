@@ -11,12 +11,10 @@
 
 <p align="center">
   <a href="">
-    <img alt="Version" src="https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcptpiepmatz%2Frg-15-flipper%2Frefs%2Fheads%2Fmain%2FCargo.toml&query=package.version&style=for-the-badge&label=Version&color=orange
-    "/>  
+    <img alt="Version" src="https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcptpiepmatz%2Frg-15-flipper%2Frefs%2Fheads%2Fmain%2FCargo.toml&query=package.version&style=for-the-badge&label=Version&color=orange"/>  
   </a>
   <a href="https://github.com/flipperdevices/flipperzero-firmware/tree/1.0.1">
-    <img alt="API Version" src ="https://img.shields.io/badge/api_version-sdk_73-blue?style=for-the-badge
-    "/>
+    <img alt="API Version" src ="https://img.shields.io/badge/api_version-sdk_73-blue?style=for-the-badge"/>
   </a>
   <a href="https://github.com/cptpiepmatz/rg-15-flipper/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/cptpiepmatz/rg-15-flipper?style=for-the-badge"/>  
