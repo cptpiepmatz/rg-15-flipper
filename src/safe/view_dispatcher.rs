@@ -3,7 +3,7 @@ use alloc::{
     sync::{Arc, Weak},
     vec::Vec,
 };
-use core::{ffi::c_uchar, marker::PhantomData, ptr::NonNull};
+use core::{ffi::c_uchar, ptr::NonNull};
 use flipperzero::furi::sync::Mutex;
 use flipperzero_sys as sys;
 
@@ -17,6 +17,7 @@ pub struct ViewDispatcher {
     pub(super) widgets: Vec<(u32, Arc<Mutex<Widget>>)>,
 }
 
+#[allow(unused)]
 #[repr(u8)]
 pub enum ViewDispatcherType {
     Window = sys::ViewDispatcherType_ViewDispatcherTypeWindow,

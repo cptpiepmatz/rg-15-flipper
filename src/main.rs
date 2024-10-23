@@ -15,10 +15,9 @@ use alloc::{borrow::ToOwned, string::String, sync::Arc};
 use cmd::BaudRate;
 use flipperzero::{
     furi::{self, string::FuriString},
-    println,
 };
 use flipperzero_rt::{entry, manifest};
-use serial_marker::{Initialized, Uninitialized};
+use serial_marker::Initialized;
 use ufmt::derive::uDebug;
 
 use safe::*;

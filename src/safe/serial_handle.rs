@@ -5,7 +5,6 @@ use core::{
     mem::{self, ManuallyDrop},
     num::NonZeroUsize,
     ptr::{self, NonNull},
-    sync::atomic::AtomicU8,
 };
 use flipperzero::{furi, println};
 use flipperzero_sys as sys;
@@ -89,6 +88,7 @@ impl SerialHandle<serial_marker::Initialized> {
 }
 
 impl SerialHandle<serial_marker::Interrupted> {
+    #[allow(unused)]
     pub fn rx_available(&self) -> bool {
         unsafe { sys::furi_hal_serial_async_rx_available(self.data.as_ptr()) }
     }

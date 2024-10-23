@@ -1,4 +1,4 @@
-use alloc::{collections::BTreeMap, sync::Arc};
+use alloc::sync::Arc;
 use core::{
     ffi::{c_void, CStr},
     mem::ManuallyDrop,
